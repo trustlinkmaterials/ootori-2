@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>コンピテンシー評価システム — 画面モック</title>
+<style>
+:root {
+  --ink: #1a2030;
+  --paper: #f7f7f5;
+  --panel: #ffffff;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --accent: #4f46e5;
+  --accent-tint: #eef2ff;
+  --accent-strong: #3730a3;
+  --ok: #059669;
+  --ok-tint: #d1fae5;
+  --warn: #d97706;
+  --warn-tint: #fef3c7;
+  --self-highlight: #fef9c3;
+  --mgr-highlight: #dbeafe;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+  background: #e8e9ef;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── LAYOUT ── */
+.page-wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+h1.page-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #d1d5db;
+}
+.screens {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 32px;
+  align-items: start;
+}
+.screen-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.screen-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding: 0 4px;
+}
+.device-sm {
+  width: 100%;
+  max-width: 375px;
+  margin: 0 auto;
+  border-radius: 36px;
+  background: #1c1c1e;
+  padding: 14px 10px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+.device-sm .notch {
+  width: 90px; height: 22px;
+  background: #1c1c1e;
+  border-radius: 12px;
+  margin: 0 auto 10px;
+}
+.device-sm .screen-inner {
+  border-radius: 26px;
+  overflow: hidden;
+  background: var(--paper);
+}
+.device-pc {
+  width: 100%;
+  border-radius: 10px;
+  background: #2a2a2d;
+  padding: 10px 10px 8px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.device-pc .titlebar {
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 8px; padding: 0 4px;
+}
+.device-pc .titlebar span {
+  width: 11px; height: 11px; border-radius: 50%;
+}
+.dot-r { background: #ff5f57; }
+.dot-y { background: #febc2e; }
+.dot-g { background: #28c840; }
+.device-pc .screen-inner {
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+/* ── COMMON UI ── */
+.app-header {
+  background: var(--accent);
+  color: #fff;
+  padding: 14px 16px 12px;
+}
+.app-header .ttl { font-size: 16px; font-weight: 700; }
+.app-header .sub { font-size: 11px; opacity: .8; margin-top: 2px; }
+.app-header-pc {
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.app-header-pc .logo { font-size: 13px; font-weight: 700; color: var(--accent); }
+.app-header-pc .user { font-size: 12px; color: var(--muted); }
+.app-header-pc .logout { font-size: 12px; color: var(--accent); text-decoration: none; margin-left: 12px; }
+
+.progress-bar {
+  background: rgba(255,255,255,.2);
+  height: 4px; border-radius: 2px;
+  margin-top: 10px;
+}
+.progress-fill {
+  height: 100%; border-radius: 2px;
+  background: #fff;
+}
+
+.scroll-area { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.scroll-area-pc { padding: 20px 24px; display: flex; flex-direction: column; gap: 18px; }
+
+/* competency card */
+.comp-card {
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+}
+.comp-card .comp-no {
+  font-size: 10px; font-weight: 700; color: var(--accent);
+  letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px;
+}
+.comp-card .comp-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.comp-card .comp-def { font-size: 11.5px; color: var(--muted); margin-bottom: 10px; line-height: 1.5; }
+.score-btns { display: flex; gap: 6px; }
+.score-btn {
+  flex: 1; aspect-ratio: 1;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  font-size: 15px; font-weight: 700;
+  color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.score-btn.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.score-desc { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+.score-desc.active { color: var(--accent-strong); font-weight: 600; }
+
+/* comment */
+.comment-box { background: var(--panel); border-radius: 14px; padding: 14px; border: 1px solid var(--line); }
+.comment-box label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 6px; }
+.comment-box textarea {
+  width: 100%; border: 1.5px solid var(--line); border-radius: 10px;
+  padding: 10px; font: inherit; font-size: 13px; resize: none;
+  background: var(--paper); color: var(--ink);
+  outline: none;
+}
+.comment-box textarea:focus { border-color: var(--accent); }
+
+/* quiz */
+.quiz-card { background: var(--panel); border-radius: 14px; padding: 14px; border: 1px solid var(--line); }
+.quiz-card .q-no { font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: .1em; margin-bottom: 6px; }
+.quiz-card .q-text { font-size: 13.5px; font-weight: 600; line-height: 1.6; margin-bottom: 12px; }
+.choice-list { display: flex; flex-direction: column; gap: 7px; }
+.choice {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px;
+  border: 1.5px solid var(--line);
+  background: var(--panel); cursor: pointer; font-size: 13px;
+}
+.choice.selected { border-color: var(--accent); background: var(--accent-tint); color: var(--accent-strong); font-weight: 600; }
+.choice .choice-mark {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--line);
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+}
+.choice.selected .choice-mark { background: var(--accent); border-color: var(--accent); }
+.choice.selected .choice-mark::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #fff; display: block; }
+
+.timer-bar {
+  background: var(--accent-tint);
+  border-bottom: 1px solid #c7d2fe;
+  padding: 8px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px;
+}
+.timer-val { font-weight: 700; color: var(--accent); font-size: 14px; }
+
+/* reference panel (manager/exec) */
+.ref-panel {
+  background: var(--self-highlight);
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid #fde047;
+  margin-bottom: 8px;
+}
+.ref-panel .ref-label { font-size: 10px; font-weight: 700; color: #92400e; letter-spacing: .08em; margin-bottom: 6px; }
+.ref-row { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; }
+.ref-score { font-size: 20px; font-weight: 800; color: var(--accent); min-width: 28px; }
+.ref-text { color: #374151; line-height: 1.5; }
+.ref-comment { font-size: 11.5px; color: #6b7280; margin-top: 4px; font-style: italic; }
+
+.ref-panel-mgr {
+  background: var(--mgr-highlight);
+  border-color: #93c5fd;
+}
+.ref-panel-mgr .ref-label { color: #1e3a8a; }
+.ref-panel-mgr .ref-score { color: #1d4ed8; }
+
+/* rubric table */
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 8px 0; }
+.rubric-table td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.rubric-table td:first-child { font-weight: 700; width: 24px; color: var(--muted); }
+.rubric-table tr.self-row td { background: var(--self-highlight); }
+.rubric-table tr.self-row td:first-child { color: var(--accent); }
+.rubric-table tr.mgr-row td { background: var(--mgr-highlight); }
+.rubric-table tr.mgr-row td:first-child { color: #1d4ed8; }
+.rubric-badge { font-size: 10px; font-weight: 700; border-radius: 4px; padding: 1px 5px; margin-left: 4px; }
+.badge-self { background: #fef08a; color: #92400e; }
+.badge-mgr { background: #bfdbfe; color: #1e3a8a; }
+
+/* score input exec */
+.exec-input-wrap { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.exec-input {
+  width: 88px; font: inherit; font-size: 22px; font-weight: 700;
+  border: 2px solid var(--accent);
+  border-radius: 10px; padding: 8px 10px; text-align: center;
+  color: var(--accent); background: var(--accent-tint);
+  outline: none;
+}
+.exec-input-hint { font-size: 11px; color: var(--muted); line-height: 1.6; }
+
+/* bottom action */
+.bottom-action {
+  padding: 14px 16px;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+.btn-primary {
+  width: 100%; padding: 13px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 12px;
+  font: inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer; letter-spacing: .02em;
+}
+.btn-primary:hover { background: var(--accent-strong); }
+.btn-secondary {
+  width: 100%; padding: 11px;
+  background: var(--panel); color: var(--muted);
+  border: 1px solid var(--line); border-radius: 12px;
+  font: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer; margin-top: 8px;
+}
+
+/* tags */
+.tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px; }
+.tag-layer { background: var(--accent-tint); color: var(--accent-strong); }
+.tag-saved { background: var(--ok-tint); color: var(--ok); }
+
+.divider { height: 1px; background: var(--line); margin: 4px 0; }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+<h1 class="page-title">コンピテンシー評価システム — 画面モック</h1>
+
+<div class="screens">
+
+<!-- ① スマホ：自己評価（スコア入力） -->
+<div class="screen-wrap">
+<div class="screen-label">① 自己評価（スコア入力）　スマホ</div>
+<div class="device-sm">
+  <div class="notch"></div>
+  <div class="screen-inner">
+    <div class="app-header">
+      <div class="ttl">コンピテンシー自己評価</div>
+      <div class="sub">渡辺 健 <span class="tag tag-layer" style="background:rgba(255,255,255,.2);color:#fff">成長層</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+    </div>
+    <div class="scroll-area">
+      <div style="font-size:11px;color:var(--muted);text-align:right">3 / 10 項目</div>
+
+      <div class="comp-card">
+        <div class="comp-no">Competency 03</div>
+        <div class="comp-name">チームワーク</div>
+        <div class="comp-def">周囲と協力しながら業務を進め、チームの一員として支援・貢献できる力</div>
+        <div class="score-btns">
+          <div class="score-btn">1</div>
+          <div class="score-btn">2</div>
+          <div class="score-btn selected">3</div>
+          <div class="score-btn">4</div>
+          <div class="score-btn">5</div>
+        </div>
+        <div class="score-desc active">チームの方針を理解し、自分の役割を果たしながら周囲に協力できる</div>
+      </div>
+
+      <div class="comp-card" style="opacity:.6">
+        <div class="comp-no">Competency 04</div>
+        <div class="comp-name">顧客対応力</div>
+        <div class="comp-def">お客様のニーズを把握し、誠実・迅速に対応できる力</div>
+        <div class="score-btns">
+          <div class="score-btn">1</div>
+          <div class="score-btn">2</div>
+          <div class="score-btn">3</div>
+          <div class="score-btn">4</div>
+          <div class="score-btn">5</div>
+        </div>
+        <div class="score-desc">スコアを選んでください</div>
+      </div>
+    </div>
+    <div class="bottom-action">
+      <button class="btn-primary">次の項目へ</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ② スマホ：自己評価コメント入力 -->
+<div class="screen-wrap">
+<div class="screen-label">② 自己評価コメント入力　スマホ</div>
+<div class="device-sm">
+  <div class="notch"></div>
+  <div class="screen-inner">
+    <div class="app-header">
+      <div class="ttl">自己評価コメント</div>
+      <div class="sub">スコア入力後、各項目のコメントを記入します</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+    </div>
+    <div class="scroll-area">
+      <div class="comment-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:13px;font-weight:700">01　ビジネスマナー</span>
+          <span style="font-size:18px;font-weight:800;color:var(--accent)">3</span>
+        </div>
+        <div style="font-size:11px;color:var(--accent-strong);background:var(--accent-tint);border-radius:6px;padding:4px 8px;margin-bottom:8px">スコア3：言葉遣いや立ち居振る舞いが丁寧で、不快感を与えていない</div>
+        <label>スコア3にした理由・取り組みを記述してください</label>
+        <textarea rows="3" placeholder="例：挨拶や身だしなみは安定しています。場面に応じた言葉遣いをさらに意識したいです。">挨拶・身だしなみは安定。場面に応じた言葉遣いを意識中。</textarea>
+        <div style="text-align:right;margin-top:4px"><span class="tag tag-saved">保存しました</span></div>
+      </div>
+
+      <div class="comment-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:13px;font-weight:700">02　報連相</span>
+          <span style="font-size:18px;font-weight:800;color:var(--accent)">4</span>
+        </div>
+        <div style="font-size:11px;color:var(--accent-strong);background:var(--accent-tint);border-radius:6px;padding:4px 8px;margin-bottom:8px">スコア4：適切なタイミングで報告・連絡・相談ができ、周囲との連携がとれている</div>
+        <label>スコア4にした理由・取り組みを記述してください</label>
+        <textarea rows="3" placeholder="記述してください…"></textarea>
+      </div>
+
+      <div class="comment-box" style="opacity:.5">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:13px;font-weight:700">03　チームワーク</span>
+          <span style="font-size:18px;font-weight:800;color:var(--muted)">—</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);background:#f3f4f6;border-radius:6px;padding:4px 8px;margin-bottom:8px">スコア未入力（前の画面でスコアを選んでください）</div>
+        <label>スコアを選んでからコメントを入力できます</label>
+        <textarea rows="3" placeholder="記述してください…" disabled></textarea>
+      </div>
+    </div>
+    <div class="bottom-action">
+      <button class="btn-primary">確認画面へ進む</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ③ スマホ：小テスト -->
+<div class="screen-wrap">
+<div class="screen-label">③ 小テスト　スマホ</div>
+<div class="device-sm">
+  <div class="notch"></div>
+  <div class="screen-inner">
+    <div class="app-header">
+      <div class="ttl">2026年 考課テスト</div>
+      <div class="sub">渡辺 健　受験枠：16:00〜17:00</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div>
+    </div>
+    <div class="timer-bar">
+      <span style="color:var(--muted);font-size:12px">残り時間</span>
+      <span class="timer-val">47:23</span>
+      <span style="font-size:11px;color:var(--muted)">問 2 / 10</span>
+    </div>
+    <div class="scroll-area">
+      <div class="quiz-card">
+        <div class="q-no">問題 2</div>
+        <div class="q-text">仕事の基本となる意識として、もっとも適切なものを選べ。</div>
+        <div class="choice-list">
+          <div class="choice">
+            <div class="choice-mark"></div>
+            ア．顧客意識とは、お客様が求めるものを優先して提案することである
+          </div>
+          <div class="choice">
+            <div class="choice-mark"></div>
+            イ．協調意識とは、問題が生じた際も自力で解決し周囲に迷惑をかけないことである
+          </div>
+          <div class="choice selected">
+            <div class="choice-mark"></div>
+            ウ．コスト意識とは、すべての活動に費用がかかることを意識し、ムダをなくすことである
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-action">
+      <button class="btn-primary">次の問題へ</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ④ PC：部門長評価 -->
+<div class="screen-wrap" style="grid-column: span 2;">
+<div class="screen-label">④ 部門長評価（自己評価・コメント参照）　PC</div>
+<div class="device-pc">
+  <div class="titlebar">
+    <span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span>
+  </div>
+  <div class="screen-inner">
+    <div class="app-header-pc">
+      <div class="logo">コンピテンシー評価システム</div>
+      <div>
+        <span class="user">山田 太郎（部門長）</span>
+        <a class="logout" href="#">ログアウト</a>
+      </div>
+    </div>
+    <div class="scroll-area-pc">
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <h2 style="font-size:18px;font-weight:700">考課入力 — 渡辺 健 さん</h2>
+        <span style="font-size:12px;color:var(--muted)">パチンコ部門 ／ 成長層 ／ 評価者：山田 太郎</span>
+      </div>
+
+      <!-- comp card PC -->
+      <div class="comp-card">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span class="comp-no" style="margin:0">01</span>
+          <span class="comp-name" style="margin:0">ビジネスマナー</span>
+        </div>
+        <div class="comp-def">職場における基本的なマナー（挨拶・身だしなみ・言葉遣い）を理解し、状況に応じて適切に行動できる力</div>
+
+        <!-- 自己評価参照 -->
+        <div class="ref-panel">
+          <div class="ref-label">本人の自己評価（参考）</div>
+          <div class="ref-row">
+            <div class="ref-score">3</div>
+            <div>
+              <div class="ref-text">言葉遣いや立ち居振る舞いが丁寧で、不快感を与えていない</div>
+              <div class="ref-comment">「挨拶・身だしなみは安定。場面に応じた言葉遣いを意識中。」</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- rubric -->
+        <table class="rubric-table">
+          <tr><td>1</td><td>理解していない</td></tr>
+          <tr><td>2</td><td>本人が理解し、言葉遣いや振る舞いに気を付けている</td></tr>
+          <tr class="self-row"><td>3</td><td>言葉遣いや立ち居振る舞いが丁寧で、不快感を与えていない <span class="rubric-badge badge-self">本人評価</span></td></tr>
+          <tr><td>4</td><td>周囲のスタッフの模範となり、指摘・指導ができる</td></tr>
+          <tr><td>5</td><td>組織全体のマナー向上を牽引し、文化として定着させている</td></tr>
+        </table>
+
+        <div style="margin-top:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px">あなたの評価（1〜5）</div>
+          <div class="score-btns" style="max-width:280px">
+            <div class="score-btn">1</div>
+            <div class="score-btn">2</div>
+            <div class="score-btn">3</div>
+            <div class="score-btn selected">4</div>
+            <div class="score-btn">5</div>
+          </div>
+          <div class="score-desc active" style="margin-top:6px">周囲のスタッフの模範となり、指摘・指導ができる</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px">コメント（必須）</div>
+          <textarea style="width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:13px;resize:none;background:var(--paper);color:var(--ink);outline:none" rows="2">挨拶や言葉遣いが安定しており、後輩への声かけも見られる。引き続き意識向上を期待。</textarea>
+          <div style="text-align:right;margin-top:4px"><span class="tag tag-saved">保存しました</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button style="padding:10px 20px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted)">戻って修正する</button>
+        <button class="btn-primary" style="width:auto;padding:10px 28px">確認画面へ進む</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ⑤ PC：役員最終評価 -->
+<div class="screen-wrap" style="grid-column: span 2;">
+<div class="screen-label">⑤ 役員 最終評価（自己評価＋部門長評価参照）　PC</div>
+<div class="device-pc">
+  <div class="titlebar">
+    <span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span>
+  </div>
+  <div class="screen-inner">
+    <div class="app-header-pc">
+      <div class="logo">コンピテンシー評価システム</div>
+      <div>
+        <span class="user">大野 誠（役員）</span>
+        <a class="logout" href="#">ログアウト</a>
+      </div>
+    </div>
+    <div class="scroll-area-pc">
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <h2 style="font-size:18px;font-weight:700">最終評価（会社評価）— 渡辺 健 さん</h2>
+        <span style="font-size:12px;color:var(--muted)">パチンコ部門 ／ 成長層</span>
+      </div>
+
+      <div class="comp-card">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span class="comp-no" style="margin:0">01</span>
+          <span class="comp-name" style="margin:0">ビジネスマナー</span>
+        </div>
+        <div class="comp-def">職場における基本的なマナー（挨拶・身だしなみ・言葉遣い）を理解し、状況に応じて適切に行動できる力</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <!-- 自己評価 -->
+          <div class="ref-panel">
+            <div class="ref-label">本人の自己評価</div>
+            <div class="ref-row">
+              <div class="ref-score">3</div>
+              <div>
+                <div class="ref-text">言葉遣いや立ち居振る舞いが丁寧</div>
+                <div class="ref-comment">「挨拶・身だしなみは安定。言葉遣いを意識中。」</div>
+              </div>
+            </div>
+          </div>
+          <!-- 部門長評価 -->
+          <div class="ref-panel ref-panel-mgr">
+            <div class="ref-label">部門長評価（山田 太郎）</div>
+            <div class="ref-row">
+              <div class="ref-score" style="color:#1d4ed8">4</div>
+              <div>
+                <div class="ref-text">周囲の模範となり、指摘・指導ができる</div>
+                <div class="ref-comment">「後輩への声かけも見られる。」</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- rubric with both markers -->
+        <table class="rubric-table">
+          <tr><td>1</td><td>理解していない</td></tr>
+          <tr><td>2</td><td>本人が理解し、言葉遣いや振る舞いに気を付けている</td></tr>
+          <tr class="self-row"><td>3</td><td>言葉遣いや立ち居振る舞いが丁寧で、不快感を与えていない <span class="rubric-badge badge-self">本人</span></td></tr>
+          <tr class="mgr-row"><td>4</td><td>周囲のスタッフの模範となり、指摘・指導ができる <span class="rubric-badge badge-mgr">部門長</span></td></tr>
+          <tr><td>5</td><td>組織全体のマナー向上を牽引し、文化として定着させている</td></tr>
+        </table>
+
+        <!-- 役員スコア入力 -->
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px">最終評価（1.0〜5.0）</div>
+          <div class="exec-input-wrap">
+            <input class="exec-input" type="text" value="3.5" inputmode="decimal">
+            <div class="exec-input-hint">1.0〜5.0（0.1刻み・全角可）<br>例：3.5　４.２</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button style="padding:10px 20px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted)">戻って修正する</button>
+        <button class="btn-primary" style="width:auto;padding:10px 28px">確認・確定する</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /screens -->
+</div><!-- /page-wrap -->
+</body>
+</html>
